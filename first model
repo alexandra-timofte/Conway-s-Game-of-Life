@@ -1,0 +1,66 @@
+import torch
+import torch.nn as nn
+import torch.utils.data as tu
+import torchvision
+
+
+class OneLayerNet(nn.Module):
+
+    def __init__(self):
+        super(OneLayerNet, self).__init__()
+        self.conv1 = nn.Conv2d(1, 1, kernel_size=3, stride=1, padding=1)
+
+    def forward(self, x):
+        out = self.conv1(x)
+        return out
+
+
+# N is batch size; D_in is input dimension;
+# H is hidden dimension; D_out is output dimension.
+D_in, D_out = 3, 3
+batch_size = 30
+num_epochs = 5
+
+DATA_PATH = '/home/al/PycharmProjects/Data'
+MODEL_STORE_PATH = '/home/al/PycharmProjects/Model'
+# transforms to apply to the data
+trans = torchvision.transforms.ToTensor()
+# MNIST dataset
+
+train_dataset = torchvision.datasets.MNIST(root=DATA_PATH, train=True, transform=trans, download=True)
+test_dataset = torchvision.datasets.MNIST(root=DATA_PATH, train=False, transform=trans)
+
+train_loader = tu.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = tu.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+
+model = OneLayerNet()
+
+# Loss and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+total_step = len(train_loader)
+loss_list = []
+acc_list = []
+for epoch in range(num_epochs):
+    for i, (images, moves) in enumerate(train_loader):
+        # Run the forward pass
+        outputs = model(images)
+        loss = criterion(outputs, moves)
+        loss_list.append(loss.item())
+
+        # Backprop and perform Adam optimisation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Track the accuracy
+        total = moves.size(0)
+        _, predicted = torch.max(outputs.data, 1)
+        correct = (predicted == moves).sum().item()
+        acc_list.append(correct / total)
+
+        if (i + 1) % 100 == 0:
+            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
+                  .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
+                          (correct / total) * 100))
