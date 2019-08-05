@@ -1,9 +1,10 @@
 import numpy as np
 from scipy import signal
 from torch.utils.data import Dataset
+import pickle
 
 size = 100
-num_of_samples = 10
+num_of_samples = 100
 
 class MyDataset(Dataset):
     def __init__(self):
@@ -42,6 +43,9 @@ def onespl(x):
 
 if __name__ == "__main__":
     data = MyDataset()
-    f = open('Data.txt', 'w')
-    f.write("%s\n" % data.samples)
+    data.samples = np.array(data.samples)
+    pickling_on = open("Data.pickle", "wb")
+    pickle.dump(data.samples, pickling_on)
+    pickling_on.close()
+
 
