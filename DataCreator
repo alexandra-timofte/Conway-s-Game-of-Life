@@ -1,0 +1,47 @@
+import numpy as np
+from scipy import signal
+from torch.utils.data import Dataset
+
+size = 100
+num_of_samples = 10
+
+class MyDataset(Dataset):
+    def __init__(self):
+        self.samples = []
+        for i in range(num_of_samples):
+            x = np.random.rand(100, 100)
+            y = onespl(x)
+            self.samples.append((x, y))
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        return self.samples[idx]
+
+
+def onespl(x):
+    lg = size
+    d = 40
+    # lg = lungimea matricei afisate
+    # d este lungimea marginii, lg+2*d e lungimea matricei mari
+    b = np.ones((lg+2*d, lg+2*d), dtype=np.float32)
+    b[d:d + lg, d:d + lg] = x
+    s = np.zeros(b.shape)
+    w = np.array([[1, 1, 1],
+                [1, 0, 1],
+                [1, 1, 1], ], dtype='float')
+    f = signal.convolve2d(b, w, 'valid')
+    f = 8 - f
+    s[1:-1, 1:-1] += f
+    b[(b == 1) & (s == 3)] = 0
+    b[((s > 3) | (s < 2)) & (b == 0)] = 1
+    af = b[d:d + lg, d:d + lg]
+    return af
+
+
+if __name__ == "__main__":
+    data = MyDataset()
+    f = open('Data.txt', 'w')
+    f.write("%s\n" % data.samples)
+
