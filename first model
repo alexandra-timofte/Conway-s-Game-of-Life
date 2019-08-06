@@ -19,7 +19,7 @@ class OneLayerNet(nn.Module):
         return x
 
 
-num_epochs = 3
+num_epochs = 2
 
 pickle_off = open("Data.pickle", "rb")
 train = pickle.load(pickle_off)
@@ -28,7 +28,7 @@ model = OneLayerNet().double()
 
 # criterion and optimizer
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.007)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 total_step = len(train)
 loss_list = []
