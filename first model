@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 import torch.nn as nn
 import pickle
 import torch.nn.functional as F
@@ -26,7 +27,7 @@ model = OneLayerNet().double()
 
 # criterion and optimizer
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.007)
 
 total_step = len(train)
 loss_list = []
@@ -34,8 +35,10 @@ acc_list = []
 for epoch in range(num_epochs):
     for i, (image, move) in enumerate(train):
         # Run the forward pass
+        image = image.astype(dtype=np.float32)
+        move = move.astype(dtype=np.float32)
         image = torch.from_numpy(image).double().unsqueeze(dim=0).unsqueeze(dim=0)
-        move = torch.from_numpy(move)
+        move = torch.from_numpy(move).double()
         output = model(image).squeeze()
         loss = criterion(output, move)
         print(loss)
