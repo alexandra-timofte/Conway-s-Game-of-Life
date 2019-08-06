@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.utils.data as tu
-import torchvision
+import pickle
+import torch.nn.functional as F
 
 
 class OneLayerNet(nn.Module):
@@ -12,55 +12,37 @@ class OneLayerNet(nn.Module):
 
     def forward(self, x):
         out = self.conv1(x)
+        out = F.relu(out)
         return out
 
 
-# N is batch size; D_in is input dimension;
-# H is hidden dimension; D_out is output dimension.
-D_in, D_out = 3, 3
+# D_in is input dimension;
+
+D_in, D_out = 2, 2
 batch_size = 30
-num_epochs = 5
+num_epochs = 3
 
-DATA_PATH = '/home/al/PycharmProjects/Data'
-MODEL_STORE_PATH = '/home/al/PycharmProjects/Model'
-# transforms to apply to the data
-trans = torchvision.transforms.ToTensor()
-# MNIST dataset
+pickle_off = open("Data.pickle", "rb")
+train = pickle.load(pickle_off)
 
-train_dataset = torchvision.datasets.MNIST(root=DATA_PATH, train=True, transform=trans, download=True)
-test_dataset = torchvision.datasets.MNIST(root=DATA_PATH, train=False, transform=trans)
+model = OneLayerNet().double()
 
-train_loader = tu.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = tu.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+# criterion and optimizer
+criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-model = OneLayerNet()
-
-# Loss and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-total_step = len(train_loader)
+total_step = len(train)
 loss_list = []
 acc_list = []
 for epoch in range(num_epochs):
-    for i, (images, moves) in enumerate(train_loader):
+    for i, (image, move) in enumerate(train):
         # Run the forward pass
-        outputs = model(images)
-        loss = criterion(outputs, moves)
-        loss_list.append(loss.item())
-
+        image = torch.from_numpy(image).double().unsqueeze(dim=0).unsqueeze(dim=0)
+        move = torch.from_numpy(move)
+        output = model(image).squeeze()
+        loss = criterion(output, move)
+        print(loss)
         # Backprop and perform Adam optimisation
         optimizer.zero_grad()
-        loss.backward()
+        loss.squeeze().backward()
         optimizer.step()
-
-        # Track the accuracy
-        total = moves.size(0)
-        _, predicted = torch.max(outputs.data, 1)
-        correct = (predicted == moves).sum().item()
-        acc_list.append(correct / total)
-
-        if (i + 1) % 100 == 0:
-            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
-                  .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
-                          (correct / total) * 100))
