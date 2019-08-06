@@ -10,7 +10,8 @@ class MyDataset(Dataset):
     def __init__(self):
         self.samples = []
         for i in range(num_of_samples):
-            x = np.random.rand(100, 100)
+            x = np.random.randint(2, size=(100, 100))
+            x = x.astype(dtype=np.float32)
             y = onespl(x)
             self.samples.append((x, y))
 
@@ -47,5 +48,3 @@ if __name__ == "__main__":
     pickling_on = open("Data.pickle", "wb")
     pickle.dump(data.samples, pickling_on)
     pickling_on.close()
-
-
