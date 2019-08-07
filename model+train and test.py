@@ -20,7 +20,7 @@ class OneLayerNet(nn.Module):
         return x
 
 
-num_epochs = 10
+num_epochs = 6
 
 pickle_off = open("Data.pickle", "rb")
 train = pickle.load(pickle_off)
@@ -35,8 +35,6 @@ for epoch in range(num_epochs):
     for i, (image, move) in enumerate(train):
         # Run the forward pass
         if i >= 100:
-            image = image.astype(dtype=np.float32)
-            move = move.astype(dtype=np.float32)
             image = torch.from_numpy(image).double().unsqueeze(dim=0).unsqueeze(dim=0)
             move = torch.from_numpy(move).double()
             output = model(image).squeeze()
