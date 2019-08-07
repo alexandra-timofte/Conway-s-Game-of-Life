@@ -20,7 +20,7 @@ class OneLayerNet(nn.Module):
         return x
 
 
-num_epochs = 6
+num_epochs = 5
 
 pickle_off = open("Data.pickle", "rb")
 train = pickle.load(pickle_off)
