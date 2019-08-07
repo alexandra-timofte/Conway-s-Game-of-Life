@@ -37,17 +37,18 @@ acc_list = []
 for epoch in range(num_epochs):
     for i, (image, move) in enumerate(train):
         # Run the forward pass
-        image = image.astype(dtype=np.float32)
-        move = move.astype(dtype=np.float32)
-        image = torch.from_numpy(image).double().unsqueeze(dim=0).unsqueeze(dim=0)
-        move = torch.from_numpy(move).double()
-        output = model(image).squeeze()
-        loss = criterion(output, move)
-        print(loss)
-        # Backprop and perform Adam optimisation
-        optimizer.zero_grad()
-        loss.squeeze().backward()
-        optimizer.step()
+        if i>=100:
+            image = image.astype(dtype=np.float32)
+            move = move.astype(dtype=np.float32)
+            image = torch.from_numpy(image).double().unsqueeze(dim=0).unsqueeze(dim=0)
+            move = torch.from_numpy(move).double()
+            output = model(image).squeeze()
+            loss = criterion(output, move)
+            print(loss)
+            # Backprop and perform Adam optimisation
+            optimizer.zero_grad()
+            loss.squeeze().backward()
+            optimizer.step()
 params = list(model.parameters())
 print(params)
 # test
