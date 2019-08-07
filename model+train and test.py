@@ -31,9 +31,6 @@ model = OneLayerNet().double()
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-total_step = len(train)
-loss_list = []
-acc_list = []
 for epoch in range(num_epochs):
     for i, (image, move) in enumerate(train):
         # Run the forward pass
