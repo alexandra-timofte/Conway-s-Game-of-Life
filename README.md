@@ -1,3 +1,3 @@
 # Conway-s-Game-of-Life
-Rachmaninoff > Schumann > Berlioz
+Rachmaninoff ~ Shostakovich > Stravinsky > Schumann > Mozart > Berlioz 
 
