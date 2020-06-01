@@ -5,14 +5,14 @@ from scipy import signal
 
 def test_main():
     lg = 30
-    d = 2000
+    d = 60
     # lg = lungimea matricei afisate
     # d este lungimea marginii, lg+2*d e lungimea matricei mari
     b = np.ones((lg+2*d, lg+2*d), dtype=np.float32)
     af = b[d:d+lg, d:d+lg]
     name = "Conway's Game of Life | Press any key when done making initial configuration"
 
-    def fuc(event, x, y, flags, param):
+    def actcelula(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONUP:
             b[y+d, x+d] = 1-b[y+d, x+d]
             print(x, y)
@@ -20,7 +20,7 @@ def test_main():
 
     cv2.namedWindow(name, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(name, 600, 600)
-    cv2.setMouseCallback(name, fuc)
+    cv2.setMouseCallback(name, actcelula)
     cv2.imshow(name, af)
     cv2.waitKey(0)
     t = 0
